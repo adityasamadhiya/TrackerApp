@@ -28,21 +28,31 @@ public class ObjectTracker {
 
         List<ObjectEvent> objectEvents1 = sliceEventsAndIdentify(objectEvents, min, max, step);
 
-        step = (long) (60 * 60);
+
+        step = (long) (24 * 60 * 60);
 
         List<ObjectEvent> objectEvents2 = sliceEventsAndIdentify(objectEvents1, min, max, step);
 
+        step = (long) (24 * 60 * 60);
+
+        List<ObjectEvent> objectEvents3 = sliceEventsAndIdentify(objectEvents2, min, max, step);
+
+        objectEvents.forEach(s -> System.out.println(s.getUuid()));
+        System.out.println("-------------");
+        objectEvents1.forEach(s -> System.out.println(s.getUuid()));
+        System.out.println("--------------");
+        dao.getAll().forEach(s -> System.out.println(s));
 
         return null;
     }
 
     private List<ObjectEvent> sliceEventsAndIdentify(List<ObjectEvent> objectEvents, Long min, Long max, Long step) {
-        HashMap<List<Double>, ObjectEvent> attributeObjectMap = new HashMap<>();
+        HashMap<Integer, ObjectEvent> attributeObjectMap = new HashMap<>();
         List<ObjectEvent> updatedObjectEvent = new ArrayList<>();
         ObjectMatcherUtil matcher = new ObjectMatcherUtil();
 
         objectEvents.forEach(objectEvent -> {
-            attributeObjectMap.put(objectEvent.getAttributes(), objectEvent);
+            attributeObjectMap.put(objectEvent.getAttributes().hashCode(), objectEvent);
         });
 
 
@@ -84,7 +94,7 @@ public class ObjectTracker {
         return updatedObjectEvent;
     }
 
-    private Collection<? extends ObjectEvent> getUpdatedEventsFromAttributes(Long min, HashMap<List<Double>, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
+    private Collection<? extends ObjectEvent> getUpdatedEventsFromAttributes(Long min, HashMap<Integer, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
         List<ObjectEvent> objectEvents = new ArrayList<>();
         aggregateAttributes.forEach( objectAggregate -> {
             Long timeStamp = min;
@@ -92,7 +102,7 @@ public class ObjectTracker {
             Double longitude = 0.0;
             HashSet<UUID> uuids = new HashSet<>();
             for(List<Double> att : objectAggregate.getObjectAttributes()) {
-                ObjectEvent objectEvent = attributeObjectMap.get(att);
+                ObjectEvent objectEvent = attributeObjectMap.get(att.hashCode());
                 uuids.add(objectEvent.getUuid());
                 if(objectEvent.getTemporalCoordinate().getTime() > timeStamp) {
                     timeStamp = objectEvent.getTemporalCoordinate().getTime();

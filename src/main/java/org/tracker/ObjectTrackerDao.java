@@ -2,7 +2,6 @@ package org.tracker;
 
 import org.tracker.model.Coordinate;
 import org.tracker.model.ObjectEvent;
-import org.tracker.model.TemporalCoordinate;
 
 import java.util.*;
 
@@ -38,8 +37,8 @@ public class ObjectTrackerDao {
         });
     }
 
-    public List<ObjectEvent> getAll() {
-        throw new UnsupportedOperationException("Method not supported");
+    public Set<UUID> getAll() {
+        return locationTable.keySet();
     }
 
 }
