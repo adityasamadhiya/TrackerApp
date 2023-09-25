@@ -10,6 +10,11 @@ public class TemporalCoordinate {
         this.time = time;
     }
 
+    public TemporalCoordinate(Coordinate coordinate, Long time) {
+        this.coordinate = coordinate;
+        this.time = time;
+    }
+
     public Double getLatitude() {
         return coordinate.getLatitude();
     }

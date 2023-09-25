@@ -4,32 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectLocationHistory {
-    private List<TemporalCoordinate> journeyHistory;
-    private Integer objectId;
+    private List<TemporalCoordinate> temporalCoordinates;
+    private String objectId;
 
-    public ObjectLocationHistory(Integer objectId) {
+    public ObjectLocationHistory(String objectId, List<TemporalCoordinate> temporalCoordinates) {
         this.objectId = objectId;
-        journeyHistory = new ArrayList<>();
+        this.temporalCoordinates = temporalCoordinates;
     }
 
-    public void setJourneyHistory(List<TemporalCoordinate> journeyHistory) {
-        this.journeyHistory = journeyHistory;
+
+    public void setJourneyHistory(List<TemporalCoordinate> temporalCoordinates) {
+        this.temporalCoordinates = temporalCoordinates;
     }
 
-    public void setObjectId(Integer objectId) {
+    public void setObjectId(String objectId) {
         this.objectId = objectId;
     }
 
     public List<TemporalCoordinate> getJourneyHistory() {
-        return List.copyOf(journeyHistory);
+        return List.copyOf(temporalCoordinates);
     }
 
-    public Integer getObjectId() {
+    public String getObjectId() {
         return objectId;
     }
 
     public void addJourney(TemporalCoordinate coordinate) {
-        journeyHistory.add(coordinate);
+        temporalCoordinates.add(coordinate);
     }
 
 }

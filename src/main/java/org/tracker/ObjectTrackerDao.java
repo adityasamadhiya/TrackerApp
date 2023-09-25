@@ -37,8 +37,8 @@ public class ObjectTrackerDao {
         });
     }
 
-    public Set<UUID> getAll() {
-        return locationTable.keySet();
+    public HashMap<UUID, HashMap<Long, Coordinate>> getAll() {
+        return locationTable;
     }
 
 }
