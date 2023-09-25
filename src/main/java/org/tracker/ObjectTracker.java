@@ -2,6 +2,7 @@ package org.tracker;
 
 import org.objectmatcher.implementation.ObjectMatcherUtil;
 import org.objectmatcher.model.ObjectAggregate;
+import org.objectmatcher.model.ObjectModel;
 import org.tracker.model.ObjectEvent;
 import org.tracker.model.TemporalCoordinate;
 import org.tracker.model.ObjectLocationHistory;
@@ -47,12 +48,12 @@ public class ObjectTracker {
     }
 
     private List<ObjectEvent> sliceEventsAndIdentify(List<ObjectEvent> objectEvents, Long min, Long max, Long step) {
-        HashMap<Integer, ObjectEvent> attributeObjectMap = new HashMap<>();
+        HashMap<UUID, ObjectEvent> attributeObjectMap = new HashMap<>();
         List<ObjectEvent> updatedObjectEvent = new ArrayList<>();
         ObjectMatcherUtil matcher = new ObjectMatcherUtil();
 
         objectEvents.forEach(objectEvent -> {
-            attributeObjectMap.put(objectEvent.getAttributes().hashCode(), objectEvent);
+            attributeObjectMap.put(objectEvent.getUuid(), objectEvent);
         });
 
 
@@ -62,7 +63,7 @@ public class ObjectTracker {
 
             List<ObjectEvent> filteredEvent = getFilteredEvents(objectEvents, startTime, endTime);
 
-            List<List<Double>> attributes = attributeExtractor(filteredEvent);
+            List<ObjectModel> attributes = convertToObjectModel(filteredEvent);
             List<ObjectAggregate> aggregateAttributes = matcher.matchObject(attributes, 70.0);
 
             updatedObjectEvent.addAll(getUpdatedEventsFromAttributes(min, attributeObjectMap, aggregateAttributes));
@@ -94,15 +95,23 @@ public class ObjectTracker {
         return updatedObjectEvent;
     }
 
-    private Collection<? extends ObjectEvent> getUpdatedEventsFromAttributes(Long min, HashMap<Integer, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
+    private List<ObjectModel> convertToObjectModel(List<ObjectEvent> filteredEvent) {
+        List<ObjectModel> objectModels = new ArrayList<>();
+        filteredEvent.forEach( objectEvent -> {
+            objectModels.add(new ObjectModel(objectEvent.getUuid().toString(), objectEvent.getAttributes()));
+        });
+        return objectModels;
+    }
+
+    private Collection<? extends ObjectEvent> getUpdatedEventsFromAttributes(Long min, HashMap<UUID, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
         List<ObjectEvent> objectEvents = new ArrayList<>();
         aggregateAttributes.forEach( objectAggregate -> {
             Long timeStamp = min;
             Double latitude = 0.0;
             Double longitude = 0.0;
             HashSet<UUID> uuids = new HashSet<>();
-            for(List<Double> att : objectAggregate.getObjectAttributes()) {
-                ObjectEvent objectEvent = attributeObjectMap.get(att.hashCode());
+            for(ObjectModel att : objectAggregate.getObjectAttributes()) {
+                ObjectEvent objectEvent = attributeObjectMap.get(UUID.fromString(att.getId()));
                 uuids.add(objectEvent.getUuid());
                 if(objectEvent.getTemporalCoordinate().getTime() > timeStamp) {
                     timeStamp = objectEvent.getTemporalCoordinate().getTime();

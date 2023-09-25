@@ -7,8 +7,16 @@ public class ObjectModel {
 
     String id;
 
-    public ObjectModel(List<Double> attributes, String id) {
-        this.attributes = attributes;
+    public ObjectModel(String id, List<Double> attributes) {
         this.id = id;
+        this.attributes = attributes;
+    }
+
+    public List<Double> getAttributes() {
+        return List.copyOf(attributes);
+    }
+
+    public String getId() {
+        return id;
     }
 }

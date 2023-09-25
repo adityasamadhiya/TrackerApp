@@ -5,16 +5,16 @@ import java.util.UUID;
 
 public class ObjectAggregate {
 
-    private List<List<Double>> objectAttributes;
+    private List<ObjectModel> objectAttributes;
     private List<Double> objectAggregateAttributes;
 
-    public ObjectAggregate(List<List<Double>> objectAttributes, List<Double> objectAggregateAttributes) {
+    public ObjectAggregate(List<ObjectModel> objectAttributes, List<Double> objectAggregateAttributes) {
         this.objectAttributes = objectAttributes;
         this.objectAggregateAttributes = objectAggregateAttributes;
     }
 
-    public List<List<Double>> getObjectAttributes() {
-        return List.copyOf(objectAttributes);
+    public List<ObjectModel> getObjectAttributes() {
+        return objectAttributes;
     }
 
     public List<Double> getObjectAggregateAttributes() {
