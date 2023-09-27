@@ -2,24 +2,24 @@ package org.objectmatcher.implementation;
 
 import org.objectmatcher.ObjectMatcherInterface;
 import org.objectmatcher.model.ObjectAggregate;
-import org.objectmatcher.model.ObjectModel;
+import org.objectmatcher.model.ObjectAttributes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ObjectMatcherUtil implements ObjectMatcherInterface {
+public class SimpleObjectMatcherImpl implements ObjectMatcherInterface {
 
-    public List<ObjectAggregate> matchObject(List<ObjectModel> attributeVector, Double threshold) {
-        Set<ObjectModel> matchedVectorsSet = new HashSet<>();
+    public List<ObjectAggregate> matchObject(List<ObjectAttributes> attributeVector, Double threshold) {
+        Set<ObjectAttributes> matchedVectorsSet = new HashSet<>();
         List<ObjectAggregate> aggregateGroupedObjects = new ArrayList<>();
         attributeVector.forEach(v1-> {
 
             if(matchedVectorsSet.contains(v1))
                 return;
 
-            List<ObjectModel> groupedVectorList = new ArrayList<>();
+            List<ObjectAttributes> groupedVectorList = new ArrayList<>();
 
             groupedVectorList.add(v1);
             matchedVectorsSet.add(v1);
@@ -39,12 +39,12 @@ public class ObjectMatcherUtil implements ObjectMatcherInterface {
         return aggregateGroupedObjects;
     }
 
-    private static ObjectAggregate createObjectAggregate(List<ObjectModel> groupedVectorList) {
+    private static ObjectAggregate createObjectAggregate(List<ObjectAttributes> groupedVectorList) {
         List<Double> aggregate = computeAggregate(groupedVectorList);
         return new ObjectAggregate(groupedVectorList, aggregate);
     }
 
-    private static List<Double> computeAggregate(List<ObjectModel> groupedVectorList) {
+    private static List<Double> computeAggregate(List<ObjectAttributes> groupedVectorList) {
         List<Double> aggregate = new ArrayList<>();
         for(int index=0; index < groupedVectorList.get(0).getAttributes().size(); index++) {
             aggregate.add(getElementAverage(groupedVectorList, index));
@@ -52,7 +52,7 @@ public class ObjectMatcherUtil implements ObjectMatcherInterface {
         return aggregate;
     }
 
-    private static Double getElementAverage(List<ObjectModel> groupedVectorList, int index) {
+    private static Double getElementAverage(List<ObjectAttributes> groupedVectorList, int index) {
         Integer count = groupedVectorList.size();
         if(count == 0)
             return 0.0;
@@ -60,7 +60,7 @@ public class ObjectMatcherUtil implements ObjectMatcherInterface {
         return sum/count;
     }
 
-    protected static Boolean compare(ObjectModel v1, ObjectModel v2, Double threshold) {
+    protected static Boolean compare(ObjectAttributes v1, ObjectAttributes v2, Double threshold) {
         if(v1.getAttributes().size() != v2.getAttributes().size())
             return false;
         int size = v1.getAttributes().size();

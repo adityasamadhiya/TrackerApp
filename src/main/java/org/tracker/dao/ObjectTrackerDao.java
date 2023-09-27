@@ -1,4 +1,4 @@
-package org.tracker;
+package org.tracker.dao;
 
 import org.tracker.model.Coordinate;
 import org.tracker.model.ObjectEvent;

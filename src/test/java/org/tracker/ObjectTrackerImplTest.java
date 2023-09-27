@@ -1,6 +1,8 @@
 package org.tracker;
 
 import org.junit.jupiter.api.Test;
+import org.tracker.dao.ObjectTrackerDao;
+import org.tracker.implementation.ObjectTrackerImpl;
 import org.tracker.model.ObjectEvent;
 import org.tracker.model.ObjectLocationHistory;
 import org.tracker.model.TemporalCoordinate;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ObjectTrackerTest {
+public class ObjectTrackerImplTest {
 
     @Test
     public void testIdentifyAndTrackObject() {
@@ -58,7 +60,7 @@ public class ObjectTrackerTest {
         events.add(getObjectEvent(List.of(20.0, 50.0, 32.0, 100.0, 68.0), 11.6300, 34.4000, "2023-09-25T23:31:30Z"));
 
         ObjectTrackerDao dao = new ObjectTrackerDao();
-        List<ObjectLocationHistory> locationHistory = new ObjectTracker(dao).trackObject(events);
+        List<ObjectLocationHistory> locationHistory = new ObjectTrackerImpl(dao).trackObjects(events);
 
         List<Integer> sizesList = locationHistory.stream()
                 .map(history -> history.getJourneyHistory().size())

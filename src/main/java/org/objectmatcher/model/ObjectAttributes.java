@@ -2,12 +2,12 @@ package org.objectmatcher.model;
 
 import java.util.List;
 
-public class ObjectModel {
+public class ObjectAttributes {
     private List<Double> attributes;
 
     String id;
 
-    public ObjectModel(String id, List<Double> attributes) {
+    public ObjectAttributes(String id, List<Double> attributes) {
         this.id = id;
         this.attributes = attributes;
     }

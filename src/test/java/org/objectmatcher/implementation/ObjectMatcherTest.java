@@ -2,7 +2,7 @@ package org.objectmatcher.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.objectmatcher.model.ObjectAggregate;
-import org.objectmatcher.model.ObjectModel;
+import org.objectmatcher.model.ObjectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +13,26 @@ public class ObjectMatcherTest {
 
     @Test
     public void testObjectMatcher() {
-        List<ObjectModel> testVector = new ArrayList<>();
-        testVector.add( new ObjectModel("Id1",  List.of(1.0, 2.0, 3.0, 4.0, 5.0)));
-        testVector.add(new ObjectModel("Id2",  List.of(1.0 , 2.0, 3.0, 4.0, 6.0)));
-        testVector.add(new ObjectModel("Id3",  List.of(1.0 , 2.0, 3.0, 4.0, 7.0)));
-        testVector.add(new ObjectModel("Id4",  List.of(1.0 , 2.0, 3.0, 4.0, 4.0)));
+        List<ObjectAttributes> testVector = new ArrayList<>();
+        testVector.add( new ObjectAttributes("Id1",  List.of(1.0, 2.0, 3.0, 4.0, 5.0)));
+        testVector.add(new ObjectAttributes("Id2",  List.of(1.0 , 2.0, 3.0, 4.0, 6.0)));
+        testVector.add(new ObjectAttributes("Id3",  List.of(1.0 , 2.0, 3.0, 4.0, 7.0)));
+        testVector.add(new ObjectAttributes("Id4",  List.of(1.0 , 2.0, 3.0, 4.0, 4.0)));
 
 
 
-        testVector.add(new ObjectModel("Id5", List.of(5.0 , 6.0, 7.0, 8.0, 9.0)));
-        testVector.add(new ObjectModel("Id6", List.of(5.0 , 6.0, 7.0, 8.0, 10.0)));
-        testVector.add(new ObjectModel("Id7", List.of(5.0 , 6.0, 7.0, 8.0, 11.0)));
-        testVector.add(new ObjectModel("Id8", List.of(5.0 , 6.0, 7.0, 8.0, 12.0)));
-        testVector.add(new ObjectModel("Id9", List.of(5.0 , 6.0, 7.0, 8.0, 13.0)));
+        testVector.add(new ObjectAttributes("Id5", List.of(5.0 , 6.0, 7.0, 8.0, 9.0)));
+        testVector.add(new ObjectAttributes("Id6", List.of(5.0 , 6.0, 7.0, 8.0, 10.0)));
+        testVector.add(new ObjectAttributes("Id7", List.of(5.0 , 6.0, 7.0, 8.0, 11.0)));
+        testVector.add(new ObjectAttributes("Id8", List.of(5.0 , 6.0, 7.0, 8.0, 12.0)));
+        testVector.add(new ObjectAttributes("Id9", List.of(5.0 , 6.0, 7.0, 8.0, 13.0)));
 
-        testVector.add(new ObjectModel("Id10", List.of(2.0, 3.0, 4.0, 5.0, 7.0)));
-        testVector.add(new ObjectModel("Id11", List.of(2.0, 3.0, 4.0, 5.0, 8.0)));
-        testVector.add(new ObjectModel("Id12", List.of(2.0, 3.0, 4.0, 5.0, 9.0)));
-        testVector.add(new ObjectModel("Id13", List.of(2.0, 3.0, 4.0, 5.0, 10.0)));
+        testVector.add(new ObjectAttributes("Id10", List.of(2.0, 3.0, 4.0, 5.0, 7.0)));
+        testVector.add(new ObjectAttributes("Id11", List.of(2.0, 3.0, 4.0, 5.0, 8.0)));
+        testVector.add(new ObjectAttributes("Id12", List.of(2.0, 3.0, 4.0, 5.0, 9.0)));
+        testVector.add(new ObjectAttributes("Id13", List.of(2.0, 3.0, 4.0, 5.0, 10.0)));
 
-        List<ObjectAggregate> output= (new ObjectMatcherUtil()).matchObject(testVector, 70.0);
+        List<ObjectAggregate> output= (new SimpleObjectMatcherImpl()).matchObject(testVector, 70.0);
 
 
         assertEquals(4, output.get(0).getObjectAttributes().size());
