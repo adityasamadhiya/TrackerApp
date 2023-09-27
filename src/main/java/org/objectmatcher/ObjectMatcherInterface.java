@@ -6,5 +6,5 @@ import org.objectmatcher.model.ObjectAttributes;
 import java.util.List;
 
 public interface ObjectMatcherInterface {
-    public List<ObjectAggregate> matchObject(List<ObjectAttributes> attributeVector, Double threshold);
+    public List<ObjectAggregate> matchObject(List<ObjectAttributes> attributeVector);
 }

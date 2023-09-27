@@ -1,5 +1,6 @@
 package org.objectmatcher.implementation;
 
+import jdk.jfr.Threshold;
 import org.objectmatcher.ObjectMatcherInterface;
 import org.objectmatcher.model.ObjectAggregate;
 import org.objectmatcher.model.ObjectAttributes;
@@ -11,7 +12,13 @@ import java.util.Set;
 
 public class SimpleObjectMatcherImpl implements ObjectMatcherInterface {
 
-    public List<ObjectAggregate> matchObject(List<ObjectAttributes> attributeVector, Double threshold) {
+    Double threshold;
+
+    public SimpleObjectMatcherImpl(Double threshold) {
+        this.threshold = threshold;
+    }
+
+    public List<ObjectAggregate> matchObject(List<ObjectAttributes> attributeVector) {
         Set<ObjectAttributes> matchedVectorsSet = new HashSet<>();
         List<ObjectAggregate> aggregateGroupedObjects = new ArrayList<>();
         attributeVector.forEach(v1-> {

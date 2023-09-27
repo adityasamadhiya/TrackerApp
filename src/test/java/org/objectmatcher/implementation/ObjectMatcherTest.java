@@ -32,7 +32,7 @@ public class ObjectMatcherTest {
         testVector.add(new ObjectAttributes("Id12", List.of(2.0, 3.0, 4.0, 5.0, 9.0)));
         testVector.add(new ObjectAttributes("Id13", List.of(2.0, 3.0, 4.0, 5.0, 10.0)));
 
-        List<ObjectAggregate> output= (new SimpleObjectMatcherImpl()).matchObject(testVector, 70.0);
+        List<ObjectAggregate> output= (new SimpleObjectMatcherImpl(70.0)).matchObject(testVector);
 
 
         assertEquals(4, output.get(0).getObjectAttributes().size());

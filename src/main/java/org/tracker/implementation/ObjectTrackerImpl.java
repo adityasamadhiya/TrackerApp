@@ -1,6 +1,6 @@
 package org.tracker.implementation;
 
-import org.objectmatcher.implementation.SimpleObjectMatcherImpl;
+import org.objectmatcher.ObjectMatcherInterface;
 import org.objectmatcher.model.ObjectAggregate;
 import org.objectmatcher.model.ObjectAttributes;
 import org.tracker.IObjectTracker;
@@ -17,21 +17,20 @@ import java.util.stream.Collectors;
 public class ObjectTrackerImpl implements IObjectTracker {
 
     private ObjectTrackerDao dao;
+    ObjectMatcherInterface matcher;
 
-    public ObjectTrackerImpl(ObjectTrackerDao dao) {
+    public ObjectTrackerImpl(ObjectTrackerDao dao, ObjectMatcherInterface objectMatcher) {
         this.dao = dao;
+        this.matcher = objectMatcher;
     }
 
     public List<ObjectLocationHistory> trackObjects(List<ObjectEvent> objectEvents) {
         dao.addAll(objectEvents);
 
-        Long min = objectEvents.stream().mapToLong( o->o.getTemporalCoordinate().getTime()).min().getAsLong();
-        Long max = objectEvents.stream().mapToLong( o->o.getTemporalCoordinate().getTime()).max().getAsLong();
-
         List<Long> steps = List.of(5 * 60L, 60 * 60L, 24 * 60 * 60L);
 
         for(Long step : steps) {
-            objectEvents = identifyAndTrackObjects(objectEvents, min, max, step);
+            objectEvents = identifyAndTrackObjects(objectEvents, step);
         }
 
         return getObjectLocationHistory(dao.getAll());
@@ -52,33 +51,36 @@ public class ObjectTrackerImpl implements IObjectTracker {
         return history;
     }
 
-    private List<ObjectEvent> identifyAndTrackObjects(List<ObjectEvent> objectEvents, Long min, Long max, Long step) {
-        List<ObjectEvent> groupedEvents = new ArrayList<>();
-        SimpleObjectMatcherImpl matcher = new SimpleObjectMatcherImpl();
+    private List<ObjectEvent> identifyAndTrackObjects(List<ObjectEvent> objectEvents, Long step) {
+        Long min = objectEvents.stream().mapToLong( o->o.getTemporalCoordinate().getTime()).min().getAsLong();
+        Long max = objectEvents.stream().mapToLong( o->o.getTemporalCoordinate().getTime()).max().getAsLong();
+
 
         HashMap<UUID, ObjectEvent> attributeObjectMap = new HashMap<>();
-
         objectEvents.forEach(objectEvent -> {
             attributeObjectMap.put(objectEvent.getUuid(), objectEvent);
         });
+
+
+        List<ObjectEvent> groupedEvents = new ArrayList<>();
 
 
         for(Long index = min; index <= max; index = Instant.ofEpochMilli(index).plusSeconds(step).toEpochMilli()) {
             Long endTime = Instant.ofEpochMilli(index).plusSeconds(step).toEpochMilli();
 
             List<ObjectEvent> timeFilteredEvent = getFilteredEvents(objectEvents, index, endTime);
-            List<ObjectAttributes> attributes = convertToObjectModel(timeFilteredEvent);
+            List<ObjectAttributes> attributes = extractAttributesFromEvents(timeFilteredEvent);
 
-            List<ObjectAggregate> groupedAttributes = matcher.matchObject(attributes, 70.0);
+            List<ObjectAggregate> groupedAttributes = matcher.matchObject(attributes);
 
-            groupedEvents.addAll(getGroupedEventsFromGroupedAttributes(min, attributeObjectMap, groupedAttributes));
+            groupedEvents.addAll(convertAttributeToEvents(attributeObjectMap, groupedAttributes));
 
         }
 
         return groupedEvents;
     }
 
-    private List<ObjectAttributes> convertToObjectModel(List<ObjectEvent> filteredEvent) {
+    private List<ObjectAttributes> extractAttributesFromEvents(List<ObjectEvent> filteredEvent) {
         List<ObjectAttributes> objectAttributes = new ArrayList<>();
         filteredEvent.forEach( objectEvent -> {
             objectAttributes.add(new ObjectAttributes(objectEvent.getUuid().toString(), objectEvent.getAttributes()));
@@ -86,24 +88,28 @@ public class ObjectTrackerImpl implements IObjectTracker {
         return objectAttributes;
     }
 
-    private Collection<? extends ObjectEvent> getGroupedEventsFromGroupedAttributes(Long min, HashMap<UUID, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
+    private List<ObjectEvent> convertAttributeToEvents(HashMap<UUID, ObjectEvent> attributeObjectMap, List<ObjectAggregate> aggregateAttributes) {
         List<ObjectEvent> objectEvents = new ArrayList<>();
         aggregateAttributes.forEach( objectAggregate -> {
-            Long timeStamp = min;
+
+            Long timeStamp = Long.MIN_VALUE;
             Double latitude = 0.0;
             Double longitude = 0.0;
             HashSet<UUID> uuids = new HashSet<>();
+
             for(ObjectAttributes att : objectAggregate.getObjectAttributes()) {
                 ObjectEvent objectEvent = attributeObjectMap.get(UUID.fromString(att.getId()));
                 uuids.add(objectEvent.getUuid());
                 if(objectEvent.getTemporalCoordinate().getTime() > timeStamp) {
                     timeStamp = objectEvent.getTemporalCoordinate().getTime();
-                    latitude = objectEvent.getTemporalCoordinate().getLatitude();
-                    longitude = objectEvent.getTemporalCoordinate().getLongitude();
+                    latitude = objectEvent.getTemporalCoordinate().getCoordinate().getLatitude();
+                    longitude = objectEvent.getTemporalCoordinate().getCoordinate().getLongitude();
                 }
             }
+
             ObjectEvent event = new ObjectEvent(new TemporalCoordinate(latitude, longitude, timeStamp), objectAggregate.getObjectAggregateAttributes());
             objectEvents.add(event);
+
             uuids.forEach( uuid -> {
                 dao.update(uuid, event.getUuid());
             });

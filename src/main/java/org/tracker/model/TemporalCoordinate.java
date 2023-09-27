@@ -15,14 +15,6 @@ public class TemporalCoordinate {
         this.time = time;
     }
 
-    public Double getLatitude() {
-        return coordinate.getLatitude();
-    }
-
-    public Double getLongitude() {
-        return coordinate.getLongitude();
-    }
-
     public Long getTime() {
         return time;
     }
