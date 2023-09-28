@@ -1,7 +1,6 @@
 package org.objectmatcher.implementation;
 
-import jdk.jfr.Threshold;
-import org.objectmatcher.ObjectMatcherInterface;
+import org.objectmatcher.IObjectMatcher;
 import org.objectmatcher.model.ObjectAggregate;
 import org.objectmatcher.model.ObjectAttributes;
 
@@ -10,11 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SimpleObjectMatcherImpl implements ObjectMatcherInterface {
+public class SimpleIObjectMatcherImpl implements IObjectMatcher {
 
-    Double threshold;
+    private Double threshold;
 
-    public SimpleObjectMatcherImpl(Double threshold) {
+    public SimpleIObjectMatcherImpl(Double threshold) {
         this.threshold = threshold;
     }
 
@@ -67,7 +66,7 @@ public class SimpleObjectMatcherImpl implements ObjectMatcherInterface {
         return sum/count;
     }
 
-    protected static Boolean compare(ObjectAttributes v1, ObjectAttributes v2, Double threshold) {
+    private static Boolean compare(ObjectAttributes v1, ObjectAttributes v2, Double threshold) {
         if(v1.getAttributes().size() != v2.getAttributes().size())
             return false;
         int size = v1.getAttributes().size();
@@ -78,6 +77,5 @@ public class SimpleObjectMatcherImpl implements ObjectMatcherInterface {
                 matchCount++;
         }
         return Double.compare(matchCount * 100.00/size, threshold) == 1 ? Boolean.TRUE : Boolean.FALSE;
-
     }
 }

@@ -1,6 +1,6 @@
 package org.tracker.model;
 
-public class TemporalCoordinate {
+public class TemporalCoordinate implements Comparable<TemporalCoordinate> {
 
     private Coordinate coordinate;
     private Long time;
@@ -21,5 +21,10 @@ public class TemporalCoordinate {
 
     public Coordinate getCoordinate() {
         return coordinate;
+    }
+
+    @Override
+    public int compareTo(TemporalCoordinate temporalCoordinate) {
+        return Long.compare(this.time, temporalCoordinate.time);
     }
 }

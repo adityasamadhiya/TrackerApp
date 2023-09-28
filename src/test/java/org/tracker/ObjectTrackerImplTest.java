@@ -1,7 +1,7 @@
 package org.tracker;
 
 import org.junit.jupiter.api.Test;
-import org.objectmatcher.implementation.SimpleObjectMatcherImpl;
+import org.objectmatcher.implementation.SimpleIObjectMatcherImpl;
 import org.tracker.dao.ObjectTrackerDao;
 import org.tracker.implementation.ObjectTrackerImpl;
 import org.tracker.model.ObjectEvent;
@@ -61,7 +61,7 @@ public class ObjectTrackerImplTest {
         events.add(getObjectEvent(List.of(20.0, 50.0, 32.0, 100.0, 68.0), 11.6300, 34.4000, "2023-09-25T23:31:30Z"));
 
         ObjectTrackerDao dao = new ObjectTrackerDao();
-        List<ObjectLocationHistory> locationHistory = new ObjectTrackerImpl(dao, new SimpleObjectMatcherImpl(70.0)).trackObjects(events);
+        List<ObjectLocationHistory> locationHistory = new ObjectTrackerImpl(dao, new SimpleIObjectMatcherImpl(70.0)).trackObjects(events);
 
         List<Integer> sizesList = locationHistory.stream()
                 .map(history -> history.getJourneyHistory().size())

@@ -1,6 +1,6 @@
 package org.tracker.implementation;
 
-import org.objectmatcher.ObjectMatcherInterface;
+import org.objectmatcher.IObjectMatcher;
 import org.objectmatcher.model.ObjectAggregate;
 import org.objectmatcher.model.ObjectAttributes;
 import org.tracker.IObjectTracker;
@@ -17,14 +17,15 @@ import java.util.stream.Collectors;
 public class ObjectTrackerImpl implements IObjectTracker {
 
     private ObjectTrackerDao dao;
-    ObjectMatcherInterface matcher;
+    IObjectMatcher matcher;
 
-    public ObjectTrackerImpl(ObjectTrackerDao dao, ObjectMatcherInterface objectMatcher) {
+    public ObjectTrackerImpl(ObjectTrackerDao dao, IObjectMatcher objectMatcher) {
         this.dao = dao;
         this.matcher = objectMatcher;
     }
 
     public List<ObjectLocationHistory> trackObjects(List<ObjectEvent> objectEvents) {
+
         dao.addAll(objectEvents);
 
         List<Long> steps = List.of(5 * 60L, 60 * 60L, 24 * 60 * 60L);
@@ -40,15 +41,20 @@ public class ObjectTrackerImpl implements IObjectTracker {
         List<ObjectLocationHistory> history = new ArrayList<>();
 
         locationHistory.forEach( (uuid, locationMap)-> {
-            List<TemporalCoordinate> temporalCoordinates = new ArrayList<>();
-            locationMap.forEach( (time, coordinates) -> {
-                temporalCoordinates.add(new TemporalCoordinate(coordinates, time));
-            });
+            List<TemporalCoordinate> temporalCoordinates = createTemporalCoordinates(locationMap);
             history.add(new ObjectLocationHistory(uuid.toString(), temporalCoordinates));
-            ;
         });
 
         return history;
+    }
+
+    private List<TemporalCoordinate> createTemporalCoordinates(HashMap<Long, Coordinate> locationMap) {
+        List<TemporalCoordinate> temporalCoordinates = new ArrayList<>();
+        locationMap.forEach( (time, coordinates) -> {
+            temporalCoordinates.add(new TemporalCoordinate(coordinates, time));
+        });
+        Collections.sort(temporalCoordinates);
+        return temporalCoordinates;
     }
 
     private List<ObjectEvent> identifyAndTrackObjects(List<ObjectEvent> objectEvents, Long step) {

@@ -5,7 +5,7 @@ import java.util.List;
 public class ObjectAttributes {
     private List<Double> attributes;
 
-    String id;
+    private String id;
 
     public ObjectAttributes(String id, List<Double> attributes) {
         this.id = id;
