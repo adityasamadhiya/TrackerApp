@@ -65,7 +65,7 @@ public class ObjectTrackerImplTest {
 
         List<Integer> sizesList = locationHistory.stream()
                 .map(history -> history.getJourneyHistory().size())
-                .collect(Collectors.toList());
+                .toList();
 
         assertEquals(6, locationHistory.size());
         assertEquals(3, sizesList.stream().filter( o -> o == 4).count());

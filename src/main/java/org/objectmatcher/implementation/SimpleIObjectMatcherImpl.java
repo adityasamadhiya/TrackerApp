@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class SimpleIObjectMatcherImpl implements IObjectMatcher {
 
-    private Double threshold;
+    private final Double threshold;
 
     public SimpleIObjectMatcherImpl(Double threshold) {
         this.threshold = threshold;

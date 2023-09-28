@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class ObjectTrackerImpl implements IObjectTracker {
 
-    private ObjectTrackerDao dao;
-    IObjectMatcher matcher;
+    private final ObjectTrackerDao dao;
+    private final IObjectMatcher matcher;
 
     public ObjectTrackerImpl(ObjectTrackerDao dao, IObjectMatcher objectMatcher) {
         this.dao = dao;
@@ -106,6 +106,7 @@ public class ObjectTrackerImpl implements IObjectTracker {
             for(ObjectAttributes att : objectAggregate.getObjectAttributes()) {
                 ObjectEvent objectEvent = attributeObjectMap.get(UUID.fromString(att.getId()));
                 uuids.add(objectEvent.getUuid());
+
                 if(objectEvent.getTemporalCoordinate().getTime() > timeStamp) {
                     timeStamp = objectEvent.getTemporalCoordinate().getTime();
                     latitude = objectEvent.getTemporalCoordinate().getCoordinate().getLatitude();
